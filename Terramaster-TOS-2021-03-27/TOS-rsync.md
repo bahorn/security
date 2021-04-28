@@ -159,3 +159,7 @@ disclosing my research on Feb 1st.
 
 * [1] https://www.ihteam.net/advisory/terramaster-tos-multiple-vulnerabilities/
 * [2] https://forum.terra-master.com/en/viewtopic.php?f=28&t=1536
+
+# Updates
+
+As of [patch 1.06](https://forum.terra-master.com/en/viewtopic.php?f=28&t=1813) this finally seems to have been fixed.
