@@ -180,7 +180,7 @@ By the end, `out.elf` will be running, which in my tests was just something I pr
 ### tdp 
 
 tdp is a TP-Link daemon that doesn't do very much on this specific device, basically just returns information like the IP, mac Address and various other things (including firmware version!)
-It is far simpler than the binary that exists on home routers which have been targeted before[2].
+It is far simpler than the binary that exists on home routers which have been targeted before[2][4].
 
 
 Example output (IP, Mac Address and firmware version are blanked.):
@@ -312,5 +312,6 @@ This is a weird bug, that I've never figured out the reason for, which effects t
 ## References
 
 * [1] https://resolverblog.blogspot.com/2020/03/tp-link-cpe-510520-new-configbin.html
-* [2] https://www.synacktiv.com/en/publications/pwn2own-tokyo-2020-defeating-the-tp-link-ac1750.html]
+* [2] https://www.synacktiv.com/en/publications/pwn2own-tokyo-2020-defeating-the-tp-link-ac1750.html
 * [3] https://github.com/sirMackk/py3tftp
+* [4] https://www.zerodayinitiative.com/blog/2020/4/6/exploiting-the-tp-link-archer-c7-at-pwn2own-tokyo
