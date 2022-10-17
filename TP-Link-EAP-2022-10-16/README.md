@@ -362,6 +362,8 @@ class TPLinkModifySNMPDConfig:
         lines = [
             'rocommunity testing'
         ]
+	return '\n'+'\n'.join(lines)
+
 ```
 
 ### Config File
